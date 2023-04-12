@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-#[derive(Debug)]
 pub struct Node {
     freq: i64,
     character: Option<i8>,
