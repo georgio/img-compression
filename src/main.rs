@@ -1,4 +1,4 @@
-use img_compression::jpeg::{jpeg_compress, jpeg_expand};
+use img_compression::jpeg::{jpeg_compress_huffman, jpeg_expand_huffman};
 
 fn main() {
     let original: Vec<u8> = vec![
@@ -7,7 +7,8 @@ fn main() {
         166, 154, 136, 123, 123, 154, 154, 166, 149, 180, 136, 136, 123, 136, 123, 123, 136, 198,
         180, 154, 136, 110, 123, 123, 136, 154, 166, 136,
     ];
-    let res = jpeg_compress(original, 50);
+    let res = jpeg_compress_huffman(original, 50);
     println!("{:?}", res.0);
-    println!("{}", jpeg_expand(res.0, res.1, 50));
+    println!("{:?}", res.1);
+    println!("{}", jpeg_expand_huffman(res.0, res.1, 50));
 }

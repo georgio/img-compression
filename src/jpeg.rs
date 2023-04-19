@@ -1,6 +1,6 @@
 use crate::{
     dct::{dct_2d, dct_2d_inv},
-    huffman_coding::{huffman_compress, huffman_expand, Node},
+    huffman_coding::{huffman_decode, huffman_encode, Node},
     Matrix8x8f, Matrix8x8i, Matrix8x8u,
 };
 
@@ -57,18 +57,18 @@ fn zigzag_reconstruct(zigzag: Vec<i8>) -> Matrix8x8i {
     matrix
 }
 
-pub fn jpeg_compress(img: Vec<u8>, quality: u8) -> (Vec<i8>, Box<Node>) {
+pub fn jpeg_compress_huffman(img: Vec<u8>, quality: u8) -> (Vec<i8>, Box<Node>) {
     let m = Matrix8x8u::from_vec(img);
     let d = dct_2d(m);
     let q = gen_quantization_matrix(quality);
     let c = quantize(d, q);
     let zig = zigzag_traverse(c);
-    huffman_compress(zig)
+    huffman_encode(zig)
 }
 
-pub fn jpeg_expand(compresssed: Vec<i8>, tree: Box<Node>, quality: u8) -> Matrix8x8u {
+pub fn jpeg_expand_huffman(compresssed: Vec<i8>, tree: Box<Node>, quality: u8) -> Matrix8x8u {
     let q = gen_quantization_matrix(quality);
-    let zig = huffman_expand(compresssed, tree);
+    let zig = huffman_decode(compresssed, tree);
     let c = zigzag_reconstruct(zig);
 
     let r = quantize_inv(c, q);
@@ -145,8 +145,8 @@ const ZIGZAG_INDEX: [(usize, usize); 64] = [
 
 mod test {
     use super::{
-        dct_2d, gen_quantization_matrix, huffman_compress, huffman_expand, quantize,
-        zigzag_traverse, Matrix8x8u,
+        dct_2d, gen_quantization_matrix, huffman_decode, huffman_encode, quantize, zigzag_traverse,
+        Matrix8x8u,
     };
     #[test]
     fn jpeg_test() {
@@ -168,10 +168,10 @@ mod test {
 
         let zig = zigzag_traverse(c);
 
-        let (msg, tree) = huffman_compress(zig.clone());
+        let (msg, tree) = huffman_encode(zig.clone());
         println!("{:?}", msg);
 
-        let exp = huffman_expand(msg, tree);
+        let exp = huffman_decode(msg, tree);
 
         assert!(zig == exp);
     }

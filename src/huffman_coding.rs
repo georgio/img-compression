@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[derive(Debug)]
 pub struct Node {
     freq: i64,
     character: Option<i8>,
@@ -77,7 +78,7 @@ fn decode_string(compressed_data: &Vec<i8>, root: &Box<Node>) -> Vec<i8> {
     output
 }
 
-pub(crate) fn huffman_compress(msg: Vec<i8>) -> (Vec<i8>, Box<Node>) {
+pub(crate) fn huffman_encode(msg: Vec<i8>) -> (Vec<i8>, Box<Node>) {
     let h = frequency(&msg);
 
     let mut p: Vec<Box<Node>> = h
@@ -104,19 +105,19 @@ pub(crate) fn huffman_compress(msg: Vec<i8>) -> (Vec<i8>, Box<Node>) {
     (enc, root)
 }
 
-pub(crate) fn huffman_expand(compressed: Vec<i8>, tree: Box<Node>) -> Vec<i8> {
+pub(crate) fn huffman_decode(compressed: Vec<i8>, tree: Box<Node>) -> Vec<i8> {
     decode_string(&compressed, &tree)
 }
 
 #[cfg(test)]
 mod test {
-    use super::{huffman_compress, huffman_expand};
+    use super::{huffman_decode, huffman_encode};
     #[test]
     fn huffman_correctness() {
         let msg: Vec<i8> = vec![2, 3, 5, 109, 2, 127, 49, 49];
-        let (enc, tree) = huffman_compress(msg.clone());
+        let (enc, tree) = huffman_encode(msg.clone());
 
-        let exp = huffman_expand(enc.clone(), tree);
+        let exp = huffman_decode(enc.clone(), tree);
         println!("original({:?} bytes): {:?}", msg.len(), &msg);
         println!("encoded({:?} bits): {:?}", enc.len(), &enc);
         println!("decoded({:?} bytes): {:?}", exp.len(), exp.clone());

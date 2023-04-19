@@ -1,6 +1,7 @@
 pub(crate) mod dct;
 pub(crate) mod huffman_coding;
 pub mod jpeg;
+pub mod rice_golomb_coding;
 
 use nalgebra::SMatrix;
 
